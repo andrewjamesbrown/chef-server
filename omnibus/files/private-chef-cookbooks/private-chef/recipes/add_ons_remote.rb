@@ -35,6 +35,7 @@ when 'rhel'
     sslverify true
     sslcacert '/etc/pki/tls/certs/ca-bundle.crt'
     gpgcheck true
+    enabled false
     action :create
   end
 
@@ -47,5 +48,9 @@ end
 node['private_chef']['addons']['packages'].each do |pkg|
   package pkg do
     notifies :create, "ruby_block[addon_install_notification_#{pkg}]", :immediate
+    case node['platform_family']
+    when 'rhel'
+      options "--enablerepo=chef-stable"
+    end
   end
 end
